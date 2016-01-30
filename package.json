@@ -1,0 +1,32 @@
+{
+  "name": "spreadsheets-cacher",
+  "description": "",
+  "version": "0.0.1",
+  "keywords": [
+    "spreadsheets"
+  ],
+  "author": "Artem Golovin <artem@xtc.vc>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sagv/spreadsheets-cacher.git"
+  },
+  "engines": {
+    "node": "5.3.0",
+    "npm": "3.3.12"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "licence": "Copyright (c) 2016 Artem Golovin. All rights reserved",
+  "preferGlobal": true,
+  "dependencies": {
+    "bluebird": "^2.10.2",
+    "body-parser": "^1.14.2",
+    "express": "^4.1.1",
+    "lodash": "^3.10.1",
+    "md5": "^2.0.0",
+    "morgan": "^1.0.0",
+    "nodemon": "^1.0.17",
+    "requestify": "^0.1.17"
+  }
+}

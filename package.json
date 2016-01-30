@@ -27,6 +27,7 @@
     "md5": "^2.0.0",
     "morgan": "^1.0.0",
     "nodemon": "^1.0.17",
-    "requestify": "^0.1.17"
+    "requestify": "^0.1.17",
+    "dotenv": "^1.1.0"
   }
 }

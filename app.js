@@ -1,4 +1,5 @@
 "use strict"
+require('dotenv').config({silent: true})
 
 //Module requests
 let express    = require('express')
@@ -9,18 +10,20 @@ let router     = express.Router()
 let Promise    = require('bluebird')
 let _          = require('lodash')
 let requestify = require('requestify')
+let moment     = require('moment')
 let md5        = require('md5')
 let fs         = Promise.promisifyAll(require("fs"))
-let sqlite3    = require('sqlite3').verbose()
-let dbExists   = fs.existsSync('cache.db')
-let db         = new sqlite3.Database('cache.db')
-require('dotenv').config({silent: true})
+
+//DB
+let Datastore  = require('nedb')
+let db         = new Datastore({ filename: './cache.db', autoload: true })
 
 // App Config
 const port       = process.env.PORT || 3000
 const spreadsheetsEndpoint = process.env.SPREADSHEETS_ENDPOINT || 'https://spreadsheets.google.com'
 const cachePath = __dirname + (process.env.CACHE_PATH || '/cache/')
-const reloadTimeout = process.env.RELOAD_TIMEOUT_MINUTES || 60
+const updateTimeout = (process.env.UPDATE_TIMEOUT_MINUTES || 60) * 60 * 1000
+const removeTimeout = (process.env.REMOVE_TIMEOUT_MINUTES || 1440) * 60 * 1000
 
 app.use(morgan('dev'))                     // log every request to the console
 app.use(bodyParser.json()) // for parsing application/json
@@ -129,6 +132,44 @@ let getCachedSpreadsheet = (name) => {
   })
 }
 
+let setUpdateInterval = () => {
+  console.log(updateTimeout)
+
+  setInterval(() => {
+    console.log('Updating all spreadsheets...')
+    updateOrRemoveSpreadsheets()
+  }, updateTimeout)
+}
+
+let updateOrRemoveSpreadsheets = () => {
+  db.each('SELECT * FROM Cache', (err, record) => {
+
+    // if (moment(record.dateLastRequested).isBefore(moment().subtract(removeTimeout, 'minutes'))) {
+    //   db.exec(`DELETE FROM Cache WHERE name = "${record.name}"`, err => {
+    //     if (err) console.log('Updating errored!')
+    //   })
+    // } else {
+      downloadSpreadsheet(record.name)
+      .then(json => {
+        let stringifiedJSON = JSON.stringify(json)
+        console.log(stringifiedJSON)
+
+        db.exec(`UPDATE Cache SET json = '${stringifiedJSON}' WHERE name = '${record.id}'`, err => {
+          if (err) console.log('Updating errored!', err)
+        })
+      })
+    // }
+
+  })
+}
+
+
+
+//1. Put all requested sheets into DB
+//2. Update sheets in memort every N mins
+//3. Remove not used for a week or so
+
+
 let readDB = () => {
   console.log('reading db')
   db.each("SELECT * FROM Cache", function(err, row) {
@@ -136,10 +177,6 @@ let readDB = () => {
   })
 }
 
-//1. Put all requested sheets into DB
-//2. Update sheets in memort every N mins
-//3. Remove not used for a week or so
-
-
 createTable()
+setUpdateInterval()
 readDB()

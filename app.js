@@ -11,6 +11,9 @@ let _          = require('lodash')
 let requestify = require('requestify')
 let md5        = require('md5')
 let fs         = Promise.promisifyAll(require("fs"))
+let sqlite3    = require('sqlite3').verbose()
+let dbExists   = fs.existsSync('cache.db')
+let db         = new sqlite3.Database('cache.db')
 require('dotenv').config({silent: true})
 
 // App Config
@@ -56,12 +59,15 @@ let getSpreadsheet = url => {
     
     getCachedSpreadsheet(url)
     .then(spreadsheet => {
+      console.log('Spreadsheet found in cache...')
       resolve(spreadsheet)  
     })
     .catch(() => {
+      console.log('Spreadsheet not cached...')
+
       downloadSpreadsheet(url)
       .then(spreadsheet => {
-        saveSpreadsheet(spreadsheet, url)
+        cacheSpreadsheet(url, spreadsheet)
         resolve(spreadsheet)
       })
       .catch(reject)
@@ -84,50 +90,56 @@ let downloadSpreadsheet = url => {
   })
 }
 
-let saveSpreadsheet = (json, name) => {
-  let encodedName = md5(name)
-  console.log('Saving ' + name)
-  console.log('Encoded name is ' + encodedName)
+let createTable = () => {
+  if(!dbExists) {
+    console.log('Freshly created DB, creating table')
+    db.run("CREATE TABLE Cache (id INTEGER PRIMARY KEY, name TEXT, json TEXT, dateLastRequested DATE)")
+  } else {
+    console.log('DB is old, table exists')
+  }
+}
 
-  fs.writeFileAsync(cachePath + encodedName, JSON.stringify(json), 'utf8')
-  .then(() => {
-    console.log('Saved ' + encodedName)
+let cacheSpreadsheet = (name, spreadsheet) => {
+  let date = new Date()
+  date = date.toISOString()
+
+  db.serialize(() => {
+    var stmt = db.prepare('INSERT INTO Cache VALUES (?,?,?,?)')
+    stmt.run(null, name, JSON.stringify(spreadsheet), date)
+    stmt.finalize()
   })
-  .done()
-
 }
 
 let getCachedSpreadsheet = (name) => {
-  let encodedName = md5(name)
-  console.log('Getting ' + name)
-  console.log('Encoded name is ' + encodedName)
-
   return new Promise((resolve, reject) => {
+    console.log('Getting spreadheet... ', name)
 
-    fs.readFileAsync(cachePath + encodedName, 'utf8')
-    .then(file => {
-      console.log('File found, returning!')
-      resolve(JSON.parse(file))
+    db.get(`SELECT * FROM Cache WHERE name = "${name}"`, (err, record) => {
+      if (err || !record) {
+        reject(err)
+      } else {
+
+        //Async call so users won't wait for the update
+        let date = new Date()
+        db.exec(`UPDATE Cache SET dateLastRequested = "${date.toISOString()}" WHERE name = "${name}"`)
+
+        resolve(JSON.parse(record.json))
+      }
     })
-    .catch(err => {
-      console.log('File not found!')
-      reject('404')
-    })
-    .done()
-    
   })
 }
 
-let createCacheDir = () => {
-  fs.accessAsync(cachePath.slice(0,cachePath.length-1))
-  .then(() => {
-    console.log('Cache dir exists, everything is fine')
+let readDB = () => {
+  console.log('reading db')
+  db.each("SELECT * FROM Cache", function(err, row) {
+    console.log(row.dateLastRequested);
   })
-  .catch(() => {
-    console.log('Cache dir is missing, creating one...')
-    fs.mkdir(cachePath.slice(0,cachePath.length-1))
-  })
-  .done()
 }
-createCacheDir()
 
+//1. Put all requested sheets into DB
+//2. Update sheets in memort every N mins
+//3. Remove not used for a week or so
+
+
+createTable()
+readDB()

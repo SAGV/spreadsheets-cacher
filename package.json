@@ -15,7 +15,7 @@
     "npm": "3.3.12"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "node app.js",
     "test": "jasmine-node app.js spec/ --autotest --color --watch ./components/*"
   },
   "licence": "Copyright (c) 2016 Artem Golovin. All rights reserved",

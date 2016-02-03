@@ -47,7 +47,7 @@ exports.cacheSpreadsheet = (name, spreadsheet) => {
       spreadsheet: JSON.stringify(spreadsheet),
       dateLastRequested: date.toISOString()
     }, error => {
-      // h.log(!error ? 'Saved db' : error)
+      h.log(!error ? 'Saved db' : error)
       !error ? resolve() : reject(error) 
     })
 
@@ -70,8 +70,8 @@ exports.getCachedSpreadsheet = (name) => {
           { name: name }, 
           { $set: {
             dateLastRequested: date.toISOString() }
-          }, 
-          err => { h.log(!err ? 'Saved db' : err) }
+          }
+          // err => { h.log(!err ? 'Saved db' : err) }
         )
 
         resolve(JSON.parse(record.spreadsheet))
@@ -100,6 +100,8 @@ exports.updateOrRemoveSpreadsheets = () => {
 
       records.forEach(record => {
         if (moment(record.dateLastRequested).isBefore(expiredBefore)) {
+          h.log('Spreadsheet expired, getting new one ')
+
           exports.db.remove(
             { name: record.name },
             {}, 
@@ -109,6 +111,8 @@ exports.updateOrRemoveSpreadsheets = () => {
             }
           )
         } else {
+          h.log('Spreadsheet not expired yet, updating')
+
           DownloadService.downloadSpreadsheet(record.name)
           .then(spreadsheet => {
             exports.db.update(

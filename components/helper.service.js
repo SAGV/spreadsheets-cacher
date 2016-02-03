@@ -2,6 +2,7 @@
 
 let config     = require('../config.js')
 
-exports.log = () => {
-  if (typeof jasmine === 'undefined') console.log(arguments)
+//
+exports.log = (a, b, c) => {
+  if (typeof jasmine === 'undefined') console.log(a ? a : '', b ? b : '', c ? c : '')
 }

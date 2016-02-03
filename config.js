@@ -8,4 +8,5 @@ exports.spreadsheetsEndpoint = process.env.SPREADSHEETS_ENDPOINT || 'https://spr
 exports.cachePath            = __dirname + (process.env.CACHE_PATH || '/cache/')
 exports.updateTimeout        = (process.env.UPDATE_TIMEOUT_MINUTES || 60) * 60 * 1000
 exports.removeTimeout        = (process.env.REMOVE_TIMEOUT_MINUTES || 1440) * 60 * 1000
-exports.DEV                  = (process.env.DEV) || false
+exports.dev                  = (process.env.DEV) || false
+exports.db                   = (process.env.db) || null

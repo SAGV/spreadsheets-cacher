@@ -15,22 +15,23 @@
     "npm": "3.3.12"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jasmine-node app.js spec/ --autotest --color --watch ./components/*"
   },
   "licence": "Copyright (c) 2016 Artem Golovin. All rights reserved",
   "preferGlobal": true,
   "dependencies": {
     "bluebird": "^2.10.2",
-    "body-parser": "^1.14.2",
     "dotenv": "^1.1.0",
     "express": "^4.1.1",
     "lodash": "^3.10.1",
-    "md5": "^2.0.0",
     "moment": "^2.11.1",
     "morgan": "^1.0.0",
     "nedb": "^1.7.2",
     "nodemon": "^1.0.17",
-    "requestify": "^0.1.17",
-    "sqlite3": "^3.1.1"
+    "requestify": "^0.1.17"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5"
   }
 }

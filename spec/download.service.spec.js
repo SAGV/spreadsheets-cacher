@@ -20,7 +20,7 @@ describe('downloadSpreadsheet', function() {
     downloadService.downloadSpreadsheet(this.fakeUrl)
     .then(result => {
       expect(result).toBe(this.fakeLocations)
-      expect(requestify.get).toHaveBeenCalledWith(config.spreadsheetsEndpoint + this.fakeUrl + downloadService.urlEnding)
+      expect(requestify.get).toHaveBeenCalledWith(config.endpoint + this.fakeUrl + downloadService.urlEnding)
       done()
     })
   })

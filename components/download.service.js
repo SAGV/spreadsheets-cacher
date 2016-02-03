@@ -8,7 +8,7 @@ exports.urlEnding = '?alt=json'
 
 exports.downloadSpreadsheet = url => {
   return new Promise((resolve, reject) => {
-    requestify.get(config.spreadsheetsEndpoint + url + exports.urlEnding)
+    requestify.get(config.endpoint + url + exports.urlEnding)
     .then(spreadsheet => {
       resolve(spreadsheet.getBody())
     }, reject)

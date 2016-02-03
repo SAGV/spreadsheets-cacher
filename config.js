@@ -4,9 +4,8 @@
 require('dotenv').config({silent: true})
 
 exports.port                 = process.env.PORT || 3000
-exports.spreadsheetsEndpoint = process.env.SPREADSHEETS_ENDPOINT || 'https://spreadsheets.google.com'
-exports.cachePath            = __dirname + (process.env.CACHE_PATH || '/cache/')
+exports.endpoint = process.env.ENDPOINT || 'https://spreadsheets.google.com'
 exports.updateTimeout        = (process.env.UPDATE_TIMEOUT_MINUTES || 60) * 60 * 1000
-exports.removeTimeout        = (process.env.REMOVE_TIMEOUT_MINUTES || 1440) * 60 * 1000
+exports.removeTimeout        = (process.env.REMOVE_TIMEOUT_MINUTES || 4320) * 60 * 1000
 exports.dev                  = (process.env.DEV) || false
-exports.db                   = (process.env.db) || null
+exports.db                   = (process.env.DB) || false

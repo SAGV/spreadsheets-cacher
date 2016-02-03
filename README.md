@@ -37,6 +37,6 @@ You can use `nodemon app.js` to start the app in dev mode. In that case, it will
 Use `npm test` to run tests. The tests have watchers so they will be automatically restarted when any change is made.
 
 # Possible TODOs
-— Implement Authorization headers so strangers won't be able to use your caching app
-— Make better testing setup (update Jasmine version and cover request part)
-— Add missing bits to make it work on Heroku
+- Implement Authorization headers so strangers won't be able to use your caching app
+- Make better testing setup (update Jasmine version and cover request part)
+- Add missing bits to make it work on Heroku

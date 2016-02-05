@@ -19,6 +19,12 @@ app.all('*', function(req, res, next) {
 
 
 router.get('*', function(req, res, next) {
+
+  //Send an answer for a home page
+  if (req.path === '/') {
+    res.status(200).send('Everything is up & running! Request <a href="https://github.com/goabout/spreadsheets-cacher/blob/master/README.md" target="_blank">some real spreadsheet</a> to get the result')
+    return
+  }
   
   DbService.getSpreadsheet(req.path)
   .then(spreadsheet => {

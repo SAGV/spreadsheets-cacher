@@ -73,8 +73,7 @@ Use `npm test` to run tests. The tests have watchers so they will be automatical
 # Possible TODOs
 - Implement Authorization headers so strangers won't be able to use your caching app
 - Make better testing setup (update Jasmine version and cover request part)
-- Add missing bits to make it work on Heroku
-— Implement GZIP, for example, with that [SO answer](http://stackoverflow.com/questions/10207762/how-to-use-request-or-http-module-to-read-gzip-page-into-a-string/10603029#10603029)
+- Implement GZIP, for example, with that [SO answer](http://stackoverflow.com/questions/10207762/how-to-use-request-or-http-module-to-read-gzip-page-into-a-string/10603029#10603029)
 
 # Credits
 

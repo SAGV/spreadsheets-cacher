@@ -54,7 +54,7 @@ git push heroku master
 <your_machine_address>/feeds/list/105qaS81D-gJwDPLAms0xo9ob2wIdmCBpQhD3sRyYn4k/od6/public/values?alt=json
 ```
 
-If the answer is not a error, than the machine works fine.
+If the answer is not a error, the machine works fine.
 **Note: It was only checked with Tabletop.js generated links**
 
 ### On docker

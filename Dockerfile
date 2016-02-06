@@ -13,6 +13,8 @@ RUN mkdir -p /usr/src/app && cp -a /tmp/node_modules /usr/src/app
 WORKDIR /usr/src/app
 ADD . /usr/src/app
 
-EXPOSE 3000
+ENV PORT=80
+
+EXPOSE 80
 
 CMD [ "npm", "start" ]

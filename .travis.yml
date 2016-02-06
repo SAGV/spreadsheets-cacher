@@ -1,0 +1,25 @@
+language: node_js
+node_js: 5.3.0
+
+sudo: required
+
+services:
+- docker
+
+env:
+  global:
+  - DOCKER_EMAIL=tech@goabout.com
+  - DOCKER_USERNAME=goabouttech
+  # DOCKER_PASSWORD
+  - secure: Zrwq53qQ7XoNR7ofwh9KHPXlcBdQB+cJ5SVLpKWhaXmVp9WSF22iB9MrEyAXcq40GsycI6o2p0aU2oqD2Rqck3lBpGacjGuOmQjO9975950sD8ex1bxbp436Vsj2lLl3yeUH1vzIqDJ+kuaiEydmIH4afeKfGic01Fg6nRgddynM6Ck1q4KehI863DKuelYj+rOrFPh7u+AxhrhO0XyUHHqecYbQirAM/fBz4j23gA0rWEKQF1KwaDPnp+FPl3SBcJLc/U/aL86Dc2/+J9baStCGj8kJbZdq9ISQTomEoc3CLYldP5V/VaObO5tDI1NB5w7pRJ2DscNiErfJuvsB2xz7z2Z5+7LnVqY1NvI5fYDxaaPOfqRaFfBOCTk2OZuP1LFDwjj3Mbff0XWrNJ0Gq1OnI3KfrNWxyjpziNKUjfZAtCNUNF80CIgHaGYFVhMVpEbMvqvRqAQ3Zks2v/MMp+lEWF0sPk0CBWpK1D1sjmIexIERzHa+4otS7IhHPLxUYQNk0dE9tXLnQo7qjSs7ozkWwEKbE805vHekwNlWJ4bA0ZS3jgPU4qzzxt/0vEAJJGUU3CcFk1PxkfJ8wjdRWt74q/insfnLQtcw5YAz/sTv4/LEB/dOOjKHGaVwnVzppDrYwIfpcW1NUu+nkshjRJVllNorwoA+N4ohEWNHC3s=
+  # ANSIBLE_VAULT_PASSWORD
+  - secure: MOIWpvTBE0CO0hZdCtPz8sP29pa2HQP9+92GXI4l1UkukRCvtem/oCBGQSjhDzGO6VXbL05GlveLC28pYYG1zGp4Zt3JMRiKLKzXhs6pMgr8gRWpv23wwLfg/99L+96oumjt+nPViEpFfXZDYoSSrXDkyN402NUxqY0QMbCgBcp4v0tE5yQi4RlkEjQ6Wrq64g6ODvgfr4p86fFVwXb3ZOb6BvDGU4FNyiJXAgNRQjRpKNHWIrGC4X3G1UORhzMTYeTPd1sWvueZVV63kK3OTp+suqISFC4H+sUrv3YjiG0e+Ciyri0ejgQ6CBss8+5GlLIJ4mHmfjyc+1gRnVo3gHF3kht50AbL3oVtwvZlF2H+K54aCLZPNCIfnFwtUcqgAXy7H30w0wgmEmd++ztKjtsIiOOnpNDq7SySHSSPZ2lYKw7y73/ewWFiG2eOYP6k0ym5u2SdUgrUMMNNG5vRE4Ps1YpMFPweJ5GbDvPV8gygMqsu6+7Ot7jM7FvFr9aidmtM5DfPVZkWn0bvBmTlI2Xhz1INSCQJVtiRJ7OyUiiEGcD3C5jk5VKukpyt7jmZwjAneQGH20TfZtq4HfZSgDpLWxA3Wds/qjLA1ezA5A9YaZs/nD1zf0CbsOlfJAjWo7VjPM96gevbt+MzA30mc31RG8IU6jWS2c1sGWHSO74=
+
+install: true
+
+before_script: docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+script: scripts/_integrate.sh
+
+cache:
+  apt: true

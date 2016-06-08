@@ -135,6 +135,20 @@ exports.updateOrRemoveSpreadsheets = () => {
   })
 }
 
+exports.removeEverything = () => {
+  return new Promise((resolve, reject) => {
+    exports.db.remove({}, { multi: true }, function (err, numRemoved) {
+      if (err) {
+        h.log(err)
+        reject(err)
+      } else {
+        h.log(`Removed ${numRemoved} records`)
+        resolve(numRemoved)
+      }
+    })
+  })
+}
+
 exports.setUpdateInterval = () => {
   setInterval(() => {
     h.log('Updating all spreadsheets...')

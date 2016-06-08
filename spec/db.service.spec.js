@@ -194,8 +194,21 @@ describe('DbService', function() {
       })
       .catch(done)
     })
+  })
 
+  describe('removeEverything', function() {
+    beforeEach(function(done) {
+      DbService.db.insert([this.fakeRecord1, this.fakeRecord2], () => { done() } )
+    })
 
+    it('should remove all the records', function(done) {
+      DbService.removeEverything()
+      .then(numRemoved => {
+        expect(numRemoved).toBe(2)
+        done()
+      })
+      .catch(done)
+    })
   })
 
 

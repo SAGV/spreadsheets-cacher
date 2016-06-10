@@ -83,8 +83,6 @@ angular.module('SpreadsheetsAdmin', [])
     $scope.loading = true
     $scope.errorMessage = null
 
-    console.log(spreadsheet.uri)
-
     $http.post('/api/remove/selected', { uri: spreadsheet.uri })
       .then(function(result) {
         console.log(result)
@@ -103,22 +101,21 @@ angular.module('SpreadsheetsAdmin', [])
     $scope.wipeButtonMessage = buttonMessages.loading
 
     $http.post('/api/remove/all')
-      .then(function(result) {
-        console.log(result)
-        $scope.wipeButtonMessage = buttonMessages.success(result.data.numRemoved)
-        $scope.wipeButtonSuccess = true
-        $timeout(function() {
-          $scope.wipeButtonMessage = buttonMessages.default
-          $scope.wipeButtonSuccess = false
-        }, 3000)
-      }, function(result) {
-        $scope.errorMessage = result.data.errorDescription
+    .then(function(result) {
+      $scope.wipeButtonMessage = buttonMessages.success(result.data.numRemoved)
+      $scope.wipeButtonSuccess = true
+      $timeout(function() {
         $scope.wipeButtonMessage = buttonMessages.default
-      })
-      .finally(function() {
-        getAllSpreadsheets()
-        loading = false
-      })
+        $scope.wipeButtonSuccess = false
+      }, 3000)
+    }, function(result) {
+      $scope.errorMessage = result.data.errorDescription
+      $scope.wipeButtonMessage = buttonMessages.default
+    })
+    .finally(function() {
+      getAllSpreadsheets()
+      loading = false
+    })
   }
 
   initialize()

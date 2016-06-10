@@ -47,7 +47,6 @@ router.get('/api/getInfo/all', function(req, res, next) {
 
 router.post('/api/remove/selected', function(req, res, next) {
   let selectedItem = req.body.uri
-  console.log(selectedItem)
 
   DbService.removeSingleItem(selectedItem)
   .then(numRemoved => {
@@ -71,7 +70,6 @@ router.post('/api/remove/all', function(req, res, next) {
 })
 
 router.get('/api/validatePassword', function(req, res, next) {
-  console.log('here')
   res.status(200).send()
 })
 

@@ -6,7 +6,6 @@ let config          = require('../config')
 let h               = require('./helper.service')
 let DownloadService = require('./download.service')
 let Promise         = require('bluebird')
-let _               = require('lodash')
 
 exports.initDb = () => {
   exports.db = new Datastore({ filename: config.db, autoload: true })
@@ -28,7 +27,7 @@ exports.getInformationAboutSpreadsheets = () => {
           })
         })
 
-        //Sort them by latest requeted first
+        //Sort them by "latest requested" first
         recordsInfo = recordsInfo.sort((a, b) => {
           return moment(a.dateLastRequested).isBefore(b.dateLastRequested) ? 1 : -1;
         })

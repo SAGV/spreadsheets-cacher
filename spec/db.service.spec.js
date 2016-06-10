@@ -81,6 +81,25 @@ describe('DbService', function() {
     })
   })
 
+  describe('getInformationAboutSpreadsheets', function() {
+    beforeEach(function(done) {
+      DbService.db.insert([this.fakeRecord1, this.fakeRecord2], () => { done() 
+      })
+    })
+
+    it('should get info about spreadsheets', function(done) {
+      DbService.getInformationAboutSpreadsheets()
+      .then(data => {
+        expect(data.total).toBe(2)
+        expect(data.spreadsheets[0].uri).toBe(this.fakeRecord1.name)
+        expect(data.spreadsheets[0].dateLastRequested).toBe(this.fakeRecord1.dateLastRequested)
+        expect(data.spreadsheets[1].dateLastRequested).toBe(this.fakeRecord2.dateLastRequested)
+        done()
+      })
+      .catch(done)
+    })
+  })
+
   describe('CacheSpreadsheet', function() {
     beforeEach(function() {
       this.fakeSpreadsheet1 = {
@@ -193,6 +212,40 @@ describe('DbService', function() {
         done()
       })
       .catch(done)
+    })
+  })
+
+  describe('removeSingleItem', function() {
+    beforeEach(function(done) {
+      this.nonExistingSpreadsheet = '/hahaha/'
+
+      DbService.db.insert([this.fakeRecord1, this.fakeRecord2], () => { done() } )
+    })
+
+    it('should remove selected spreadsheet', function(done) {
+      DbService.removeSingleItem(this.fakeRecord1.name)
+      .then(() => {
+        DbService.db.find({}, (err, records) => {
+          expect(records.length).toBe(1)
+          done()
+        })
+      })
+      .catch(done)
+    })
+
+    it('should return 404 if not found', function(done) {
+      DbService.removeSingleItem(this.nonExistingSpreadsheet)
+      .then(() => {
+        
+      })
+      .catch(function(err) {
+        expect(err.status).toBe(404)
+
+        DbService.db.find({}, (err, records) => {
+          expect(records.length).toBe(2)
+          done()
+        })
+      })
     })
   })
 

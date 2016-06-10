@@ -35,20 +35,38 @@ router.get('/admin', function(req, res, next) {
   res.status(200).render('admin.html')
 })
 
-router.post('/api/wipe', function(req, res, next) {
+router.get('/api/getInfo/all', function(req, res, next) {
+  DbService.getInformationAboutSpreadsheets()
+  .then(result => {
+    res.status(200).send(result)
+  })
+  .catch(err => {
+    res.status(400).send()
+  })
+})
+
+router.post('/api/remove/selected', function(req, res, next) {
+  let selectedItem = req.body.uri
+  console.log(selectedItem)
+
+  DbService.removeSingleItem(selectedItem)
+  .then(numRemoved => {
+    res.status(200).send()
+  })
+  .catch(err => {
+    res.status(err.status).send()
+  })
+})
+
+router.post('/api/remove/all', function(req, res, next) {
   DbService.removeEverything()
   .then(numRemoved => {
     res.status(200).send({
-      error: false,
       numRemoved: numRemoved
     })
   })
   .catch(err => {
-    res.status(400).send({
-      error: true,
-      numRemoved: 0,
-      errorDescription: err
-    })
+    res.status(400).send()
   })
 })
 

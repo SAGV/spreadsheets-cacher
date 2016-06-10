@@ -6,10 +6,40 @@ let config          = require('../config')
 let h               = require('./helper.service')
 let DownloadService = require('./download.service')
 let Promise         = require('bluebird')
+let _               = require('lodash')
 
 exports.initDb = () => {
   exports.db = new Datastore({ filename: config.db, autoload: true })
   Promise.promisifyAll(exports.db)
+}
+
+exports.getInformationAboutSpreadsheets = () => {
+  return new Promise((resolve, reject) => {
+    exports.db.find({}, (err, records) => {
+      if (err || !records) {
+        reject(err)
+      } else {
+        let recordsInfo = []
+
+        records.forEach(record => {
+          recordsInfo.push({
+            uri: record.name,
+            dateLastRequested: record.dateLastRequested,
+          })
+        })
+
+        //Sort them by latest requeted first
+        recordsInfo = recordsInfo.sort((a, b) => {
+          return moment(a.dateLastRequested).isBefore(b.dateLastRequested) ? 1 : -1;
+        })
+
+        resolve({
+          total: recordsInfo.length,
+          spreadsheets: recordsInfo
+        })
+      }
+    })
+  })
 }
 
 //This is the function which handles getting spreadsheets
@@ -132,6 +162,23 @@ exports.updateOrRemoveSpreadsheets = () => {
       })
     })
 
+  })
+}
+
+exports.removeSingleItem = (name) => {
+  return new Promise((resolve, reject) => {
+    exports.db.remove({name: name}, {}, function (err, numRemoved) {
+      if (err) {
+        h.log(err)
+        reject({status: 400})
+      } else if (numRemoved === 0) {
+        h.log(`Have not found the item`)
+        reject({status: 404})
+      } else {
+        h.log(`Removed ${numRemoved} records`)
+        resolve()
+      }
+    })
   })
 }
 

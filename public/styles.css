@@ -1,5 +1,5 @@
 .container {
-  max-width: 500px;
+  max-width: 900px;
   margin-top: 200px;
 }
 
@@ -9,6 +9,10 @@
 
 .border-radius-5 {
   border-radius: 5px;
+}
+
+.text-bold {
+  font-weight: bold
 }
 
 @media(max-height: 500px) {

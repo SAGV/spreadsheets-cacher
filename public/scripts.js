@@ -3,7 +3,7 @@ angular.module('SpreadsheetsAdmin', [])
 .controller('SpreadsheetsAdminController', function($scope, $http, $q, $window, $timeout) {
   var password = null
   var buttonMessages = {
-    default: "Wipe the cache",
+    default: "Remove all the spreadsheets",
     success: function(num) { return "Removed " + num + " record" + (num === 1 ? "" : "s") },
     wait: "Removing…"
   }
@@ -14,11 +14,17 @@ angular.module('SpreadsheetsAdmin', [])
   $scope.passwordForm = { typedPassword: "" }
   $scope.wipeButtonMessage = buttonMessages.default
   $scope.wipeButtonSuccess = false
+  $scope.spreadsheets = null
 
   var initialize = function() {
     checkIfLogged()
+    getAllSpreadsheets()
   }
  
+  /*
+    Auth
+  */
+
   var checkIfLogged = function() {
      password = $window.localStorage.getItem('password') || null
 
@@ -52,12 +58,51 @@ angular.module('SpreadsheetsAdmin', [])
     $window.location.reload()
   }
 
+  /*
+    Getting info
+  */
+
+  var getAllSpreadsheets = function() {
+    $http.get('/api/getInfo/all')
+    .then(function(result) {
+       $scope.spreadsheets = result.data.spreadsheets
+    }, function(error) {
+      $scope.errorMessage = "Something went wrong… Please, reload the page!"
+    })
+    .finally(function() {
+      $scope.loading = false
+    })
+  }
+
+
+  /*
+    Removing
+  */
+
+  $scope.wipeSelectedSpreadsheet = function(spreadsheet) {
+    $scope.loading = true
+    $scope.errorMessage = null
+
+    console.log(spreadsheet.uri)
+
+    $http.post('/api/remove/selected', { uri: spreadsheet.uri })
+      .then(function(result) {
+        console.log(result)
+      }, function(result) {
+        $scope.errorMessage = result.data.errorDescription
+      })
+      .finally(function() {
+        getAllSpreadsheets()
+        loading = false
+      })
+  }
+
   $scope.wipeAllTheCache = function() {
     $scope.loading = true
     $scope.errorMessage = null
     $scope.wipeButtonMessage = buttonMessages.loading
 
-    $http.post('/api/wipe')
+    $http.post('/api/remove/all')
       .then(function(result) {
         console.log(result)
         $scope.wipeButtonMessage = buttonMessages.success(result.data.numRemoved)
@@ -71,9 +116,16 @@ angular.module('SpreadsheetsAdmin', [])
         $scope.wipeButtonMessage = buttonMessages.default
       })
       .finally(function() {
+        getAllSpreadsheets()
         loading = false
       })
   }
 
   initialize()
+})
+
+.filter('fromNow', function() {
+  return function(date) {
+    return moment(date).fromNow()
+  }
 })

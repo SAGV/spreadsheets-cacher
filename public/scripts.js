@@ -85,7 +85,6 @@ angular.module('SpreadsheetsAdmin', [])
 
     $http.post('/api/remove/selected', { uri: spreadsheet.uri })
       .then(function(result) {
-        console.log(result)
       }, function(result) {
         $scope.errorMessage = result.data.errorDescription
       })

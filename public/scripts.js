@@ -18,7 +18,7 @@ angular.module('SpreadsheetsAdmin', [])
 
   var initialize = function() {
     checkIfLogged()
-    getAllSpreadsheets()
+    if ($scope.loggedInSuccessfully) getAllSpreadsheets()
   }
  
   /*

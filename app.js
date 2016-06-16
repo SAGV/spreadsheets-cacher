@@ -48,7 +48,7 @@ router.get('/api/getInfo/all', function(req, res, next) {
 router.post('/api/remove/selected', function(req, res, next) {
   let selectedItem = req.body.uri
 
-  DbService.removeSingleItem(selectedItem)
+  DbService.removeSpreadsheetGroup(selectedItem)
   .then(numRemoved => {
     res.status(200).send()
   })

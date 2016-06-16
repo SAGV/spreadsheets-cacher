@@ -4,7 +4,7 @@ angular.module('SpreadsheetsAdmin', [])
   var password = null
   var buttonMessages = {
     default: "Remove all the spreadsheets",
-    success: function(num) { return "Removed " + num + " record" + (num === 1 ? "" : "s") },
+    success: "Removed all the records",
     wait: "Removing…"
   }
 
@@ -79,11 +79,11 @@ angular.module('SpreadsheetsAdmin', [])
     Removing
   */
 
-  $scope.wipeSelectedSpreadsheet = function(spreadsheet) {
+  $scope.wipeSpreadsheetGroup = function(spreadsheet) {
     $scope.loading = true
     $scope.errorMessage = null
 
-    $http.post('/api/remove/selected', { uri: spreadsheet.uri })
+    $http.post('/api/remove/selected', { uri: spreadsheet.groupUri })
       .then(function(result) {
       }, function(result) {
         $scope.errorMessage = result.data.errorDescription
@@ -101,7 +101,7 @@ angular.module('SpreadsheetsAdmin', [])
 
     $http.post('/api/remove/all')
     .then(function(result) {
-      $scope.wipeButtonMessage = buttonMessages.success(result.data.numRemoved)
+      $scope.wipeButtonMessage = buttonMessages.success
       $scope.wipeButtonSuccess = true
       $timeout(function() {
         $scope.wipeButtonMessage = buttonMessages.default

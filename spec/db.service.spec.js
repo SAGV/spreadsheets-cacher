@@ -13,22 +13,45 @@ describe('DbService', function() {
   beforeEach(function() {
     DbService.initDb()
 
-    this.fakeUri = 'some/url'
-    this.fakeUri2 = 'some/url/2'
+    this.fakeUri = '/feeds/cells/1roykKRAFpxs96Knxme7dsS-xf0kVy6DPyx3WCbte9Ok/od6/public/values'
+    this.fakeUri2 = '/feeds/cells/1wbwnemApw1nDjuDROtHXmX-BydlMLwgk7Klg_ap9d8w/osdpulb/public/values'
+    this.fakeUri3 = '/feeds/worksheets/1wbwnemApw1nDjuDROtHXmX-BydlMLwgk7Klg_ap9d8w/public/basic'
+
+    this.groupUri = '1roykKRAFpxs96Knxme7dsS-xf0kVy6DPyx3WCbte9Ok'
+    this.groupUri2 = '1wbwnemApw1nDjuDROtHXmX-BydlMLwgk7Klg_ap9d8w'
+
+    this.fakeTitle = "Values1"
+    this.fakeTitle2 = "Values2"
+    this.fakeTitle3 = "Basic3"
 
     this.fakeSpreadsheet1 = {
       quote: 'A bargain is something you don’t need at a price you can’t resist.',
-      author: ' FRANKLIN JONES'
+      author: ' FRANKLIN JONES',
+      feed: {
+        title: {
+          $t: this.fakeTitle
+        }
+      }
     }
 
     this.fakeSpreadsheet2 = {
       quote: 'Some cause happiness wherever they go; others, whenever they go.',
-      author: 'OSCAR WILDE'
+      author: 'OSCAR WILDE',
+      feed: {
+        title: {
+          $t: this.fakeTitle2
+        }
+      }
     }
 
     this.fakeSpreadsheet3 = {
       quote: 'I read recipes the same way I read science fiction. I get to the end and I think, “Well, that’s not going to happen.”',
-      author: 'ANONYMOUS'
+      author: 'ANONYMOUS',
+      feed: {
+        title: {
+          $t: this.fakeTitle3
+        }
+      }
     }
 
     this.fakeRecord1 = {
@@ -40,6 +63,12 @@ describe('DbService', function() {
     this.fakeRecord2 = {
       name: this.fakeUri2,
       spreadsheet: JSON.stringify(this.fakeSpreadsheet2),
+      dateLastRequested: moment().subtract(2, 'day').toISOString()
+    }
+
+    this.fakeRecord3 = {
+      name: this.fakeUri3,
+      spreadsheet: JSON.stringify(this.fakeSpreadsheet3),
       dateLastRequested: moment().subtract(2, 'day').toISOString()
     }
 
@@ -83,17 +112,20 @@ describe('DbService', function() {
 
   describe('getInformationAboutSpreadsheets', function() {
     beforeEach(function(done) {
-      DbService.db.insert([this.fakeRecord1, this.fakeRecord2], () => { done() 
+      DbService.db.insert([this.fakeRecord1, this.fakeRecord2, this.fakeRecord3], () => { done() 
       })
     })
 
-    it('should get info about spreadsheets', function(done) {
+    it('should get sorted info about spreadsheets', function(done) {
       DbService.getInformationAboutSpreadsheets()
       .then(data => {
         expect(data.total).toBe(2)
-        expect(data.spreadsheets[0].uri).toBe(this.fakeRecord1.name)
-        expect(data.spreadsheets[0].dateLastRequested).toBe(this.fakeRecord1.dateLastRequested)
-        expect(data.spreadsheets[1].dateLastRequested).toBe(this.fakeRecord2.dateLastRequested)
+        expect(data.spreadsheets[0].groupUri).toBe(this.groupUri)
+        expect(data.spreadsheets[1].groupUri).toBe(this.groupUri2)
+        expect(data.spreadsheets[0].title).toEqual(undefined)
+        expect(data.spreadsheets[1].title).toBe(this.fakeTitle3)
+        expect(moment(data.spreadsheets[0].dateLastRequested).diff(this.fakeRecord1.dateLastRequested) < 1000).toBe(true)
+        expect(moment(data.spreadsheets[1].dateLastRequested).diff(this.fakeRecord2.dateLastRequested) < 1000).toBe(true)
         done()
       })
       .catch(done)
@@ -215,16 +247,18 @@ describe('DbService', function() {
     })
   })
 
-  describe('removeSingleItem', function() {
+  describe('removeSpreadsheetGroup', function() {
     beforeEach(function(done) {
       this.nonExistingSpreadsheet = '/hahaha/'
 
-      DbService.db.insert([this.fakeRecord1, this.fakeRecord2], () => { done() } )
+      DbService.db.insert([this.fakeRecord1, this.fakeRecord2, this.fakeRecord3], () => { done() } )
     })
 
-    it('should remove selected spreadsheet', function(done) {
-      DbService.removeSingleItem(this.fakeRecord1.name)
-      .then(() => {
+    it('should remove selected spreadsheets', function(done) {
+      DbService.removeSpreadsheetGroup(this.groupUri2)
+      .then(numRemoved => {
+        expect(numRemoved).toBe(2)
+
         DbService.db.find({}, (err, records) => {
           expect(records.length).toBe(1)
           done()
@@ -234,7 +268,7 @@ describe('DbService', function() {
     })
 
     it('should return 404 if not found', function(done) {
-      DbService.removeSingleItem(this.nonExistingSpreadsheet)
+      DbService.removeSpreadsheetGroup(this.nonExistingSpreadsheet)
       .then(() => {
         
       })
@@ -242,7 +276,7 @@ describe('DbService', function() {
         expect(err.status).toBe(404)
 
         DbService.db.find({}, (err, records) => {
-          expect(records.length).toBe(2)
+          expect(records.length).toBe(3)
           done()
         })
       })

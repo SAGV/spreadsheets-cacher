@@ -20,11 +20,36 @@ exports.getInformationAboutSpreadsheets = () => {
       } else {
         let recordsInfo = []
 
+        //Title will only be parsed if cached info is a google spreadsheet  
         records.forEach(record => {
-          recordsInfo.push({
-            uri: record.name,
-            dateLastRequested: record.dateLastRequested,
+          let isFound = false
+          let groupUri = record.name.split('/')[3]
+          let recordType = record.name.split('/')[5]
+          let recordFeed = undefined
+          let recordTitle = undefined
+
+          if (recordType === 'basic') {
+            recordFeed = JSON.parse(record.spreadsheet)
+            recordTitle = recordFeed.feed.title.$t
+          }
+
+          recordsInfo.forEach(recordInfo => {
+            if (recordInfo.groupUri === groupUri) {
+              isFound = true
+
+              if (recordTitle) {
+                recordInfo.title = recordTitle
+              }
+            }
           })
+
+          if (!isFound) {
+            recordsInfo.push({
+              title: recordTitle,
+              groupUri: groupUri,
+              dateLastRequested: record.dateLastRequested
+            })
+          }
         })
 
         //Sort them by "latest requested" first
@@ -164,9 +189,9 @@ exports.updateOrRemoveSpreadsheets = () => {
   })
 }
 
-exports.removeSingleItem = (name) => {
+exports.removeSpreadsheetGroup = (name) => {
   return new Promise((resolve, reject) => {
-    exports.db.remove({name: name}, {}, function (err, numRemoved) {
+    exports.db.remove({name: { $regex: new RegExp(name, 'i') } }, { multi: true }, function (err, numRemoved) {
       if (err) {
         h.log(err)
         reject({status: 400})
@@ -175,7 +200,7 @@ exports.removeSingleItem = (name) => {
         reject({status: 404})
       } else {
         h.log(`Removed ${numRemoved} records`)
-        resolve()
+        resolve(numRemoved)
       }
     })
   })

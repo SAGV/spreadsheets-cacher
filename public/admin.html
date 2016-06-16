@@ -49,13 +49,13 @@
             </tr>
             <tr ng-repeat="spreadsheet in spreadsheets">
               <td>
-                {{spreadsheet.uri}}
+                {{ spreadsheet.title || spreadsheet.groupUri }}
               </td>
               <td>
                 {{spreadsheet.dateLastRequested | fromNow}}
               </td>
               <td>
-                <button class="btn btn-primary btn-sm" ng-click="wipeSelectedSpreadsheet(spreadsheet)">Remove</button>
+                <button class="btn btn-primary btn-sm" ng-click="wipeSpreadsheetGroup(spreadsheet)">Remove</button>
               </td>
             </tr>
             <tr>

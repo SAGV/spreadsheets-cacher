@@ -12,6 +12,60 @@ exports.initDb = () => {
   Promise.promisifyAll(exports.db)
 }
 
+exports.getInformationAboutSpreadsheets = () => {
+  return new Promise((resolve, reject) => {
+    exports.db.find({}, (err, records) => {
+      if (err || !records) {
+        reject(err)
+      } else {
+        let recordsInfo = []
+
+        //Title will only be parsed if cached info is a google spreadsheet  
+        records.forEach(record => {
+          let isFound = false
+          let groupUri = record.name.split('/')[3]
+          let recordType = record.name.split('/')[5]
+          let recordFeed = undefined
+          let recordTitle = undefined
+
+          if (recordType === 'basic') {
+            recordFeed = JSON.parse(record.spreadsheet)
+            recordTitle = recordFeed.feed.title.$t
+          }
+
+          recordsInfo.forEach(recordInfo => {
+            if (recordInfo.groupUri === groupUri) {
+              isFound = true
+
+              if (recordTitle) {
+                recordInfo.title = recordTitle
+              }
+            }
+          })
+
+          if (!isFound) {
+            recordsInfo.push({
+              title: recordTitle,
+              groupUri: groupUri,
+              dateLastRequested: record.dateLastRequested
+            })
+          }
+        })
+
+        //Sort them by "latest requested" first
+        recordsInfo = recordsInfo.sort((a, b) => {
+          return moment(a.dateLastRequested).isBefore(b.dateLastRequested) ? 1 : -1;
+        })
+
+        resolve({
+          total: recordsInfo.length,
+          spreadsheets: recordsInfo
+        })
+      }
+    })
+  })
+}
+
 //This is the function which handles getting spreadsheets
 exports.getSpreadsheet = uri => {
   return new Promise((resolve, reject) => {
@@ -132,6 +186,37 @@ exports.updateOrRemoveSpreadsheets = () => {
       })
     })
 
+  })
+}
+
+exports.removeSpreadsheetGroup = (name) => {
+  return new Promise((resolve, reject) => {
+    exports.db.remove({name: { $regex: new RegExp(name, 'i') } }, { multi: true }, function (err, numRemoved) {
+      if (err) {
+        h.log(err)
+        reject({status: 400})
+      } else if (numRemoved === 0) {
+        h.log(`Have not found the item`)
+        reject({status: 404})
+      } else {
+        h.log(`Removed ${numRemoved} records`)
+        resolve(numRemoved)
+      }
+    })
+  })
+}
+
+exports.removeEverything = () => {
+  return new Promise((resolve, reject) => {
+    exports.db.remove({}, { multi: true }, function (err, numRemoved) {
+      if (err) {
+        h.log(err)
+        reject(err)
+      } else {
+        h.log(`Removed ${numRemoved} records`)
+        resolve(numRemoved)
+      }
+    })
   })
 }
 

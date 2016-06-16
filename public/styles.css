@@ -1,0 +1,23 @@
+.container {
+  max-width: 900px;
+  margin-top: 200px;
+}
+
+.padding-small {
+  padding: 15px;
+}
+
+.border-radius-5 {
+  border-radius: 5px;
+}
+
+.text-bold {
+  font-weight: bold
+}
+
+@media(max-height: 500px) {
+  .container {
+    margin-top: 50px;
+  }
+}
+

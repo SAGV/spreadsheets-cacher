@@ -9,3 +9,4 @@ exports.updateTimeout        = (process.env.UPDATE_TIMEOUT_MINUTES || 60) * 60 *
 exports.removeTimeout        = (process.env.REMOVE_TIMEOUT_MINUTES || 4320) * 60 * 1000
 exports.dev                  = (process.env.DEV) || false
 exports.db                   = (process.env.DB) || false
+exports.password             = (process.env.PASSWORD) || false

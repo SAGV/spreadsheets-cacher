@@ -44,7 +44,8 @@ angular.module('SpreadsheetsAdmin', [])
     .then(function(result) {
       $scope.loggedInSuccessfully = true
       password = typedPassword
-      $window.localStorage.setItem('password', typedPassword);
+      $window.localStorage.setItem('password', typedPassword)
+      getAllSpreadsheets()
     }, function(error) {
       $scope.errorMessage = "Invalid password :-/"
     })

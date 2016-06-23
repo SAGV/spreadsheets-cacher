@@ -38,7 +38,7 @@
           <table class="table table-striped">
             <tr ng-if="spreadsheets.length">
               <th>
-                Url
+                Title
               </th>
               <th>
                 Last requested
@@ -55,7 +55,7 @@
                 {{spreadsheet.dateLastRequested | fromNow}}
               </td>
               <td>
-                <button class="btn btn-primary btn-sm" ng-click="wipeSpreadsheetGroup(spreadsheet)">Remove</button>
+                <button class="btn btn-primary btn-sm" ng-click="wipeSpreadsheetGroup(spreadsheet)">Reset cache</button>
               </td>
             </tr>
             <tr>

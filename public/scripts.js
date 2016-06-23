@@ -3,9 +3,9 @@ angular.module('SpreadsheetsAdmin', [])
 .controller('SpreadsheetsAdminController', function($scope, $http, $q, $window, $timeout) {
   var password = null
   var buttonMessages = {
-    default: "Remove all the spreadsheets",
-    success: "Removed all the records",
-    wait: "Removing…"
+    default: "Reset all the cache",
+    success: "Done! The cache is empty",
+    wait: "Resetting…"
   }
 
   $scope.loggedInSuccessfully = false

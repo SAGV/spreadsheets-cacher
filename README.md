@@ -32,6 +32,12 @@ Also you can rename `.env.example` to `.env` and use custom configuration it. He
 - `DB`, name of the database. If left blank, the datastore is automatically considered in-memory only which is fine when you don't have many things to cache. If you're running a project with many spreadsheets to cache, I would recommend to set a name. Defaults to `false` so it is in-memory
 - `DEV`, sets the environment. Currently not used
 
+## Admin panel
+
+Admin interface allows to view cached spreadsheets and to do both reset all the cache at once or reset only selected spreadsheets. Keep in mind that all the administrator functionality is intented to work only with google spreadsheets. So if you cache something different, it might not work properly. 
+
+You can go to the admin panel by going to `<spreadsheets_cacher_address>/admin`. The password is set via environment variables (as `PASSWORD`) or via `.env`. By default there is no password.
+
 ## Setting up the cacher (on production)
 
 ### On Heroku

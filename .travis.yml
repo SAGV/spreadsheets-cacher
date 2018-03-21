@@ -19,7 +19,7 @@ install: true
 
 before_script: docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
-script: scripts/_integrate.sh
+script: ./build.sh
 
 cache:
   apt: true
